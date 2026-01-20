@@ -1,8 +1,6 @@
 #include "poincare/poincare.h"
 #include <cmath>
 #include <stdexcept>
-#include <algorithm>
-#include <numeric>
 
 namespace poincare {
 
@@ -168,6 +166,11 @@ std::vector<double> log_map(const std::vector<double>& x, const std::vector<doub
         return std::vector<double>(x.size(), 0.0);
     }
     
+    // Clamp to prevent numerical errors from causing atanh to fail
+    if (mobius_norm >= 1.0 - EPSILON) {
+        mobius_norm = 1.0 - EPSILON;
+    }
+    
     // Compute artanh(||-x ⊕ y||)
     double artanh_norm = std::atanh(mobius_norm);
     
@@ -195,6 +198,11 @@ double distance(const std::vector<double>& x, const std::vector<double>& y) {
     // Compute -x ⊕ y
     std::vector<double> mobius_result = mobius_add(neg_x, y);
     double mobius_norm = norm(mobius_result);
+    
+    // Clamp to prevent numerical errors from causing atanh to fail
+    if (mobius_norm >= 1.0 - EPSILON) {
+        mobius_norm = 1.0 - EPSILON;
+    }
     
     // Distance is artanh(||-x ⊕ y||)
     return std::atanh(mobius_norm);
